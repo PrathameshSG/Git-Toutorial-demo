@@ -1,0 +1,28 @@
+frontend
+first step npm run build 
+
+
+
+
+
+
+
+
+
+
+
+
+server
+const path=require("path")
+const _dirname=path.dirname("")
+const buildpath= path.join(_dirname,"../frontend/build")
+app.use(express.static(buildpath));
+
+
+
+
+
+
+
+
+

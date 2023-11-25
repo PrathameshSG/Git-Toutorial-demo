@@ -1,0 +1,140 @@
+import React, { useEffect, useState } from 'react';
+import DefaultPage from '../../DefaultPage/DefaultPage';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { Banner } from '../../Common/Banner/Banner';
+
+const Csr = () => {
+  const [Image, setImage] = useState([]);
+  const [policy, setPolicy] = useState([]);
+  const [bannertitle, setBannerTitle] = useState('');
+
+  const [contentBanner, setBannerContent] = useState('');
+  useEffect(() => {
+    axios
+      .get(`/api/getcsr/policy`)
+
+      .then((res) => {
+        setPolicy(res.data.result);
+      })
+      .catch((res) => console.log(res));
+  }, []);
+  useEffect(() => {
+    axios
+      .get(`/api/getcsr`)
+
+      .then((res) => {
+        setImage(res.data.result);
+      })
+      .catch((res) => console.log(res));
+  }, []);
+  useEffect(() => {
+    axios
+      .get(`/api/getpagebanner`)
+      .then((res) => {
+        res = res.data.result.filter((data) => data.option === 'CSR');
+
+        console.log(res[0].title);
+        setBannerTitle(res[0].title);
+        setBannerContent(res[0].description);
+      })
+
+      .catch((res) => console.log(res));
+  }, []);
+  useEffect(() => {
+    var modal = document.getElementById("myModal");
+
+    var modalClose = document.getElementById("close");
+    modalClose.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+
+    // global handler
+    document.addEventListener("click", function (e) {
+      if (e.target.className.indexOf("modal-target1") !== -1) {
+        var img = e.target;
+        var modalImg = document.getElementById("modal-content");
+        var captionText = document.getElementById("modal-caption");
+        modal.style.display = "block";
+        modalImg.src = img.src;
+        captionText.innerHTML = img.alt;
+      }
+    });
+  }, []);
+  return (
+    <DefaultPage>
+         <Banner
+        title={bannertitle}
+        description={contentBanner}
+      />
+      <section id="content">
+        <div className="container">
+          <div>
+            <h5>VSCL CSR Policy</h5>
+            <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-2 align-items-stretch g-3 text-center">
+              {policy &&
+                policy.map((item, i) => {
+                  return (
+                    <div className="">
+                      <Link
+                        to={`${item.image}`}
+                        target="_blank"
+                        style={{
+                          'background-color': 'var(--cnvs-contrast-bg-offset)',
+                        }}
+                        className="d-block grid-inner text-contrast-900 h-nobg border border-transparent h-border-contrast-900 py-5 px-3 rounded"
+                      >
+                        <i className="uil-cloud-download fs-2 d-block"></i>
+                        <h5 className="fs-6 fw-medium mt-3 mb-0">
+                          {' '}
+                          {item.image}
+                        </h5>
+                      </Link>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+
+          <div className="pt-5">
+              <h5>Social Responsibility</h5>
+              <div
+                id="portfolio"
+                className="portfolio row grid-container gutter-30"
+                data-layout="fitRows"
+              >
+                {Image &&
+                  Image.map((item, i) => {
+                    return (
+                      <div
+                        key={i}
+                        className="portfolio-item col-md-4 col-sm-6 col-6 "
+                      >
+                        <img
+                          className="modal-target1 rounded float-left"
+                          alt="Img 1"
+                          src={`/CSR/Images/${item.image}`}
+                          style={{
+                            height: "100%",
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+              </div>
+              <div id="myModal" className="modal">
+                <span id="close" className="close">
+                  &times;
+                </span>
+                <img id="modal-content" className="modal-content" />
+                <div id="modal-caption" className="modal-caption"></div>
+              </div>
+            </div>
+        </div>
+      </section>
+      
+    </DefaultPage>
+  );
+};
+
+export default Csr;

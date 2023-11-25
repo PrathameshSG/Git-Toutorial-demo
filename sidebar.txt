@@ -1,0 +1,391 @@
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import SidebarButton from "../SidebarButton/SidebarButton";
+import axios from "axios";
+
+const SideBar = ({ List, value, sub, compare, type, BtnPage }) => {
+  const baseurl = "http://localhost:3000";
+  const [width, setWidth] = useState(0);
+  const [showListName, setShowListName] = useState(true);
+  const [showtesTomonial, setShowTestomonial] = useState(true);
+  const [show, setShow] = useState(false);
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [image, setImage] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("/api/get-testimonial")
+      .then((res) => {
+        setShow(true);
+        setImage(res.data.result[0].image);
+        setName(res.data.result[0].name);
+        setDate(res.data.result[0].testimonial_date);
+        setDescription(res.data.result[0].description);
+        setTimeout(function () {
+          setShowTestomonial(false);
+        }, 10000);
+      })
+      .catch((res) => console.log(res));
+  }, [image]);
+  useEffect(() => {
+    function handleResize() {
+      setWidth(window.innerWidth);
+    }
+    function name(params) {
+      const check = width < 600 ? false : null;
+      return check;
+    }
+    function fullsize(params) {
+      const check = width < 600 ? undefined : null;
+      return check;
+    }
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", name);
+    window.addEventListener("resize", fullsize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", name);
+    };
+  }, [setWidth]);
+
+  //  alert(showtesTomonial)
+  return (
+    <>
+      {/* left sidebar */}
+      <div className="sidebar col-lg-3 order-lg-first p-4">
+        <div className="sidebar-widgets-wrap">
+          <div className="row col-mb-50">
+            <div className="col-md-12">
+              <ul className="list-group list-group-flush">
+                <div id="shortcodes" className="widget widget_links">
+                  <h4 className="  " style={{ fontSize: "1rem" }}>
+                    Products
+                  </h4>
+                  <ul>
+                    {List &&
+                      List.map((item, i) => {
+                        return type === "invstor" ? (
+                          window.location.href ===
+                          (value
+                            ? `${baseurl}/investor/${item.to}/${sub}`
+                            : `${baseurl}/investor/${item.to}`) ? (
+                            item.sub ? (
+                              <li
+                                className={
+                                  item.sub === compare
+                                    ? `link-wrapper d-block px-4 `
+                                    : `link-wrapper  d-none`
+                                }
+                                onClick={() => {
+                                  setShowListName(false);
+                                }}
+                              >
+                                <Link
+                                  className="text-primary"
+                                  to={`/investor/${item.to}`}
+                                >
+                                  <div>{item.ProductName}</div>
+                                </Link>
+                              </li>
+                            ) : (
+                              <li
+                                className="link-wrapper  "
+                                onClick={() => {
+                                  setShowListName(window.location.href);
+                                }}
+                              >
+                                <Link
+                                  className="text-primary"
+                                  to={`/investor/${item.to}`}
+                                >
+                                  <div>{item.ProductName}</div>
+                                </Link>
+                              </li>
+                            )
+                          ) : item.sub ? (
+                            <li
+                              className={
+                                item.sub === compare
+                                  ? `link-wrapper d-block px-4 `
+                                  : `link-wrapper  d-none`
+                              }
+                              onClick={() => {
+                                setShowListName(window.location.href);
+                              }}
+                            >
+                              <Link className="" to={`/investor/${item.to}`}>
+                                <div>{item.ProductName}</div>
+                              </Link>
+                            </li>
+                          ) : (
+                            <li
+                              className="link-wrapper  "
+                              onClick={() => {
+                                setShowListName(window.location.href);
+                              }}
+                            >
+                              <Link className="" to={`/investor/${item.to}`}>
+                                <div>{item.ProductName}</div>
+                              </Link>
+                            </li>
+                          )
+                        ) : window.location.href ===
+                          (value
+                            ? `${baseurl}${item.to}/${sub}`
+                            : `${baseurl}${item.to}`) ? (
+                          item.sub ? (
+                            <li
+                              className={
+                                item.sub === compare
+                                  ? `link-wrapper d-block px-4 `
+                                  : `link-wrapper  d-none`
+                              }
+                              onClick={() => {
+                                setShowListName(false);
+                              }}
+                            >
+                              <Link className="text-primary" to={item.to}>
+                                <div>{item.name}</div>
+                              </Link>
+                            </li>
+                          ) : (
+                            <li
+                              className="link-wrapper  "
+                              onClick={() => {
+                                setShowListName(window.location.href);
+                              }}
+                            >
+                              <Link className="text-primary" to={item.to}>
+                                <div>{item.name}</div>
+                              </Link>
+                            </li>
+                          )
+                        ) : item.sub ? (
+                          <li
+                            className={
+                              item.sub === compare
+                                ? `link-wrapper d-block px-4 `
+                                : `link-wrapper  d-none`
+                            }
+                            onClick={() => {
+                              setShowListName(window.location.href);
+                            }}
+                          >
+                            <Link className="" to={item.to}>
+                              <div>{item.name}</div>
+                            </Link>
+                          </li>
+                        ) : (
+                          <li
+                            className="link-wrapper  "
+                            onClick={() => {
+                              setShowListName(window.location.href);
+                            }}
+                          >
+                            <Link className="" to={item.to}>
+                              <div>{item.name}</div>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </div>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* right sidebar */}
+      <div className="sidebar col-lg-3 order-lg-last pt-3">
+    <div>
+    {BtnPage === "Facility" ? (
+          <div className="sidebar-widgets-wrap">
+            <div
+              className={` widget_links  ${
+                width <= 991 && width > 767 ? "center d-flex" : ""
+              }`}
+            >
+              <div className="f-flex">
+                <div className="sidebar-btn-center ">
+                  <SidebarButton
+                    Btn_title={"Get Quote Now"}
+                    Btn_content={"Request a Free Quote Today"}
+                    Btn_link={"/getquote"}
+                  />
+                </div>
+
+                <div className="sidebar-btn-center">
+                  <SidebarButton
+                    Btn_title={"Order Samples"}
+                    Btn_content={"Order Samples for R & D"}
+                    Btn_link={"/sampleorder"}
+                  />
+                </div>
+
+                <div className="sidebar-btn-center">
+                  <SidebarButton
+                    Btn_title={"Custom Formulation"}
+                    Btn_content={"Flexibility to support your need"}
+                    Btn_link={"/custom-formulationtion"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : BtnPage === "Custom Synthesis" ? (
+          <>
+            <div
+              className={` widget_links  ${
+                width <= 991 && width > 767 ? " d-flex" : ""
+              }`}
+            >
+              <div className="f-flex center">
+                <div className="sidebar-btn-center">
+                  <SidebarButton
+                    Btn_title={"Custom Formulation"}
+                    Btn_content={"Flexibility to support your need"}
+                    Btn_link={"/custom-formulation"}
+                  />
+                </div>
+                
+              </div>
+            </div>
+              <div
+                  className={`
+                   card text-center rounded-6 shadow-sm overflow-hidden d-block
+                      mt-2 mb-2
+                  `}
+                >
+                  <div className="card-body p-4">
+                    <div className="row">
+                      <div
+                        // className={`${
+                        //   showtesTomonial ? "col-12  d-block" : "col-12  d-none"
+                        // }`}
+                        className={"col-12  d-block  "}
+                      >
+                        <img
+                          className="rounded-circle mt-1"
+                          src="https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?cs=srgb&dl=pexels-pixabay-268533.jpg&fm=jpg"
+                          width="48"
+                          alt="Customer Testimonails"
+                        />
+                        <div className="d-flex justify-content-evenly ">
+                          <p
+                            className="mb-4 font-secondary"
+                            style={{
+                              fontSize: "1.125rem",
+                              lineHeight: " 1.65",
+                            }}
+                          >
+                            {description}
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        className={`align-items-center justify-content-center
+                          d-block
+                        `}
+                      >
+                        <div>
+                          <h4 className="h6 mb-0 fw-medium">{name}</h4>
+                        </div>
+                        <div>
+                          {" "}
+                          <small className="text-muted">{date}</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-icon bi-star-fill op-02"></div>
+                </div>
+          </>
+        ) : (
+          <>
+            <div
+              className={` widget_links  ${
+                width <= 991 && width > 767 ? " d-flex " : " align-content-center"
+              }`}
+            >
+              <div 
+              
+              className={` widget_links  ${
+                width <= 991 && width > 767 ? " d-flex justify-content-between w-100 " : " d-block w-100"
+              }`}
+              >
+                <div className="sidebar-btn-center ">
+                  <SidebarButton
+                    Btn_title={"Get Quote Now"}
+                    Btn_content={"Request a Free Quote Today"}
+                    Btn_link={"/getquote"}
+                  />
+                </div>
+
+                <div className="sidebar-btn-center">
+                  <SidebarButton
+                    Btn_title={"Order Samples"}
+                    Btn_content={"Order Samples for R & D"}
+                    Btn_link={"/sampleorder"}
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              className={`
+                   card text-center rounded-6 shadow-sm overflow-hidden d-block m-4
+                      
+                  `}
+            >
+              <div className="card-body ">
+                <div className="row">
+                  <div
+                    // className={`${
+                    //   showtesTomonial ? "col-12  d-block" : "col-12  d-none"
+                    // }`}
+                    className={"col-12  d-block  "}
+                  >
+                    <img
+                      className="rounded-circle mt-1"
+                      src="https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?cs=srgb&dl=pexels-pixabay-268533.jpg&fm=jpg"
+                      width="48"
+                      alt="Customer Testimonails"
+                    />
+                    <div className="d-flex justify-content-evenly ">
+                      <p
+                        className="mb-4 font-secondary"
+                        style={{ fontSize: "1.125rem", lineHeight: " 1.65" }}
+                      >
+                        {description}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className={`align-items-center justify-content-center
+                          d-block
+                        `}
+                  >
+                    <div>
+                      <h4 className="h6 mb-0 fw-medium">{name}</h4>
+                    </div>
+                    <div>
+                      {" "}
+                      <small className="text-muted">{date}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-icon bi-star-fill op-02"></div>
+            </div>
+          </>
+        )}
+    </div>
+      </div>
+    </>
+  );
+};
+export default SideBar;

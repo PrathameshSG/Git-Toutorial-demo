@@ -1,0 +1,131 @@
+const ProductModel = require("../../module/Images/image");
+var path = require("path");
+const fs = require("fs");
+const create = async (req, res) => {
+  // let products = await ProductModel.findOne({ category: req.body.category });
+  //   if (products) {
+  //     const data = [...req.files, ...products.images];
+  //     try {
+  //       const content = await ProductModel.findByIdAndUpdate(
+  //         { _id: req.body._id },
+  //         {
+  //           category: req.body.category,
+  //           images: data,
+  //         }
+  //       );
+
+  //       const content_data = await content.save();
+  //       console.log(data.length);
+  //       res
+  //         .status(200)
+  //         .send({ success: true, msg: 'content Data', data: content_data });
+  //     } catch (error) {
+  //       res.status(400).send({ success: false, msg: error.message });
+  //     }
+  //   } else {
+  //     let result = ProductModel.create({
+  //       category: req.body.category,
+  //       images: req.files,
+  //     });
+  //     if (result) {
+  //       res.send({ code: 200, message: 'Upload Success' });
+  //     } else {
+  //       res.send({ code: 500, message: 'Upload Err' });
+  //     }
+  //     console.log('create');
+  //   }
+  let result = ProductModel.create({
+    category: req.body.category,
+    images: req.files,
+  });
+  if (result) {
+    res.send({ code: 200, message: "Upload Success" });
+  } else {
+    res.send({ code: 500, message: "Upload Err" });
+  }
+  console.log("create");
+};
+const update = async (req, res) => {
+  let products = await ProductModel.findById({ _id: req.body._id });
+
+  const data = [...req.files, ...products.images];
+  try {
+    const content = await ProductModel.findByIdAndUpdate(
+      { _id: req.body._id },
+      {
+        category: req.body.category,
+        images: data,
+      }
+    );
+
+    const content_data = await content.save();
+    console.log(data.length);
+    res
+      .status(200)
+      .send({ success: true, msg: "content Data", data: content_data });
+  } catch (error) {
+    res.status(400).send({ success: false, msg: error.message });
+  }
+};
+const getAll = async (req, res) => {
+  let products = await ProductModel.find({});
+  if (products.length > 0) {
+    res.send({ code: 200, data: products });
+  } else {
+    res.send({ code: 500, message: "Server Err" });
+  }
+};
+const getSingleData = async function getSingleProductDetails(req, res) {
+  let id = req.params.name; //or use req.param('id')
+  console.log(id);
+  try {
+    const routeCat = await ProductModel.findOne({
+      $or: [{ category: { $regex: id } }],
+    });
+    res.status(200).json(routeCat);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+};
+const clearImage = (filePath) => {
+  var directories = path.dirname(
+    `C:/Users/PC/Desktop/Vscl-pro/server/public/uploads/`
+  );
+
+  const check = directories + "/" + filePath;
+  fs.unlink(check, (err) => console.log(err));
+};
+const deleteData = async (req, res) => {
+  let products = await ProductModel.findById({ _id: req.body.id });
+  const newArray = products.images.filter((item, index) => {
+    return item.filename !== req.body.name;
+  });
+  console.log(req.body);
+  try {
+    const content = await ProductModel.findByIdAndUpdate(
+      { _id: req.body.id },
+      {
+        category: req.body.category,
+        images: newArray,
+      }
+    );
+    clearImage(req.body.name);
+
+    const content_data = await content.save();
+    console.log(data);
+    res
+      .status(200)
+      .send({ success: true, msg: "content Data", data: content_data });
+  } catch (error) {
+    res.status(400).send({ success: false, msg: error.message });
+  }
+  console.log(newArray.length);
+};
+module.exports = {
+  create,
+  update,
+  getAll,
+  getSingleData,
+  deleteData,
+};
